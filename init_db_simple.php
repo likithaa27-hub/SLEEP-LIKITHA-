@@ -28,6 +28,8 @@ $sql = "CREATE TABLE IF NOT EXISTS users (
   password VARCHAR(255) NOT NULL,
   role ENUM('admin','employer','user') NOT NULL DEFAULT 'user',
   status ENUM('pending','accepted','rejected') NOT NULL DEFAULT 'pending',
+  phone VARCHAR(20),
+  phone_verified TINYINT(1) NOT NULL DEFAULT 0,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )";
 

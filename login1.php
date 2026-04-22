@@ -4,7 +4,8 @@ session_start();
 
 $errors = [
     'login' => $_SESSION['login_error'] ?? '',
-    'register' => $_SESSION['register_error'] ?? ''
+    'register' => $_SESSION['register_error'] ?? '',
+    'register_success' => $_SESSION['register_success'] ?? ''
 ];
 $activeForm = $_SESSION['active_form'] ?? 'login';
 
@@ -12,6 +13,9 @@ session_unset();
 
 function showError($error) {
     return !empty($error) ? "<p class='error-message'>$error</p>" : '';
+}
+function showSuccess($message) {
+    return !empty($message) ? "<p class='success-message'>$message</p>" : '';
 }
 
 function isActiveForm($formName, $activeForm) {
@@ -48,14 +52,19 @@ function isActiveForm($formName, $activeForm) {
             <form action="login_register.php" method="post">
                 <h2>Register</h2>
                 <?= showError($errors['register']); ?>
+                <?= showSuccess($errors['register_success']); ?>
                 <input type="text" name="name" placeholder="Name" required>
                 <input type="email" name="email" placeholder="Email" required>
+                <input type="tel" name="phone" placeholder="Phone Number" pattern="[0-9]{10}" required>
+                <button type="submit" name="send_otp">Send OTP</button>
+                <input type="text" name="otp" placeholder="Enter OTP" pattern="[0-9]{6}">
+                <button type="submit" name="verify_otp">Verify Phone</button>
                 <input type="password" name="password" placeholder="Password" required>
                 <select name="role" required>
                         <option value="">--Select Role--</option>
-                        <option value="User">User</option>
-                        <option value="Admin">Employer</option>
-                        <option value="Admin">Admin</option>
+                        <option value="user">User</option>
+                        <option value="employer">Employer</option>
+                        <option value="admin">Admin</option>
                 </select>
                  <button type="submit" name="register">Register</button>
                 <p1>Already have an account? <a href="#" onclick="showForm('login-form')">Login</a></p1>

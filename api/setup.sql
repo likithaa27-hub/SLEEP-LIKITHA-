@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS users (
   role ENUM('admin','employer','user') NOT NULL DEFAULT 'user',
   status ENUM('pending','accepted','rejected') NOT NULL DEFAULT 'pending',
   phone VARCHAR(20),
+  phone_verified TINYINT(1) NOT NULL DEFAULT 0,
   address VARCHAR(255),
   age INT,
   gender VARCHAR(20),
@@ -23,8 +24,8 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 -- Default Admin Account (password: admin)
-INSERT IGNORE INTO users (name, email, password, role, status)
-VALUES ('Super Admin', 'admin@test.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 'accepted');
+INSERT IGNORE INTO users (name, email, password, role, status, phone_verified)
+VALUES ('Super Admin', 'admin@test.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 'accepted', 1);
 
 -- JOBS TABLE
 CREATE TABLE IF NOT EXISTS jobs (
