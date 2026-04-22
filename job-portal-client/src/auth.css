@@ -1,0 +1,81 @@
+/* Scoped styles based on the user's login1.php -> styles1.css */
+.auth-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #111;
+  color: white;
+  font-family: 'Segoe UI', sans-serif;
+  margin: -24px; /* offset the main container padding */
+  padding: 0;
+}
+
+.auth-page .auth-container {
+  margin: 0 15px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.auth-page .form-box {
+  width: 100%;
+  max-width: 450px;
+  padding: 30px;
+  background: #333333;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.auth-page h2 {
+  font-size: 34px;
+  text-align: center;
+  margin-bottom: 20px;
+  color: white;
+}
+
+.auth-page input, .auth-page select {
+  width: 100%;
+  padding: 12px;
+  background: #eee;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.auth-page button {
+  width: 100%;
+  padding: 12px;
+  background: #e60023;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #fff;
+  font-weight: 500;
+  margin-bottom: 20px;
+  transition: 0.5s;
+}
+
+.auth-page button:hover {
+  background: #ff1a3c;
+}
+
+.auth-page .switch-link {
+  font-size: 14.5px;
+  text-align: center;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.auth-page .switch-link a {
+  color: #e60023;
+  text-decoration: none;
+}
+
+.auth-page .switch-link a:hover {
+  text-decoration: underline;
+}

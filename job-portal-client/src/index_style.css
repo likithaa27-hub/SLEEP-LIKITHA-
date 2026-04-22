@@ -1,0 +1,281 @@
+/* Scoped styles based on the user's index.php -> style.css */
+html {
+  scroll-behavior: smooth;
+}
+
+.index-homepage {
+
+  /* Reset */
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.index-homepage * {
+  box-sizing: border-box;
+}
+
+/* HERO BACKGROUND */
+.index-homepage .hero {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 0 80px;
+  color: white;
+
+  background-image: 
+    linear-gradient(to right, rgba(0,0,0,0.9) 40%, rgba(0,0,0,0.2)),
+    url('/img.jpg');
+
+  background-size: cover;
+  background-position: right center;
+  background-repeat: no-repeat;
+  position: relative; /* for navbar absolute positioning inside */
+}
+
+/* TEXT */
+.index-homepage .hero-content {
+  max-width: 600px;
+}
+
+.index-homepage .hero h1 {
+  font-size: 60px;
+  font-weight: bold;
+  line-height: 1.1;
+  color: white;
+}
+
+.index-homepage .hero h1 span {
+  font-weight: 300;
+  display: block;
+}
+
+.index-homepage .hero p {
+  margin-top: 20px;
+  font-size: 18px;
+  color: #ddd;
+}
+
+/* BUTTONS */
+.index-homepage .buttons {
+  margin-top: 30px;
+  display: flex;
+  gap: 20px;
+}
+
+.index-homepage .btn {
+  padding: 15px 30px;
+  border-radius: 30px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.index-homepage .btn-primary {
+  background: #e60023;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.index-homepage .btn-primary:hover {
+  background: #ff1a3c;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(230, 0, 35, 0.4);
+  color: white;
+}
+
+.index-homepage .btn-secondary {
+  background: white;
+  color: black;
+  transition: all 0.3s ease;
+}
+
+.index-homepage .btn-secondary:hover {
+  background: #f2f2f2;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+  color: black;
+}
+
+/* NAVBAR */
+.index-homepage .navbar {
+  position: absolute;
+  top: 20px;
+  left: 80px;
+  right: 80px;
+  display: flex;
+  justify-content: space-between;
+  color: white;
+  background: transparent !important;
+  border: none;
+  backdrop-filter: none;
+}
+
+.index-homepage .nav-links {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+}
+
+.index-homepage .nav-links a {
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.index-homepage .nav-links a:hover {
+  text-decoration: underline;
+}
+
+.index-homepage .login-btn {
+  background: #e60023;
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.index-homepage .login-btn:hover {
+  background: #ff1a3c;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(230, 0, 35, 0.4);
+  color: white;
+  text-decoration: none;
+}
+
+/* ABOUT SECTION - White Background per User Request */
+.about-section {
+  background-color: white;
+  padding: 100px 80px;
+  color: #1e293b;
+}
+
+.about-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 60px;
+  margin-bottom: 120px;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.about-row.reverse {
+  flex-direction: row-reverse;
+}
+
+.about-content {
+  flex: 1;
+}
+
+.about-content h2 {
+  font-size: 48px;
+  color: #0f172a;
+  margin-bottom: 24px;
+  font-weight: 700;
+}
+
+.about-content p {
+  font-size: 20px;
+  color: #475569;
+  line-height: 1.6;
+  max-width: 500px;
+}
+
+.about-image {
+  flex: 1;
+}
+
+.about-image img {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  border-radius: 24px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+
+
+@media (max-width: 992px) {
+  .about-row, .about-row.reverse {
+    flex-direction: column;
+    text-align: center;
+    padding: 0 20px;
+  }
+  .about-content p {
+    margin: 0 auto;
+  }
+  .index-homepage .hero {
+    padding: 0 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .index-homepage .hero {
+    padding: 0 20px;
+    height: auto;
+    min-height: 100vh;
+    padding-top: 120px;
+    padding-bottom: 60px;
+    background-position: center;
+  }
+
+  .index-homepage .hero h1 {
+    font-size: 38px;
+  }
+
+  .index-homepage .navbar {
+    left: 20px;
+    right: 20px;
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+
+  .index-homepage .nav-links {
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .index-homepage .buttons {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .index-homepage .btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .about-section {
+    padding: 60px 20px;
+  }
+
+  .about-content h2 {
+    font-size: 32px;
+  }
+
+  .about-image img {
+    height: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .index-homepage .hero h1 {
+    font-size: 32px;
+  }
+  
+  .index-homepage .nav-links a {
+    font-size: 13px;
+  }
+}
+
+

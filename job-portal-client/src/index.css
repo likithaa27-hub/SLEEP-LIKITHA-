@@ -1,0 +1,268 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --primary: #e60023;
+  --primary-hover: #ff1a3c;
+  --bg-gradient: linear-gradient(135deg, #121212 0%, #1a1a1a 100%);
+  --card-bg: rgba(45, 45, 45, 0.85);
+  --text-main: #f5f5f5;
+  --text-muted: #9ca3af;
+  --border-subtle: rgba(255, 255, 255, 0.1);
+}
+
+body {
+  background: var(--bg-gradient);
+  font-family: 'Outfit', -apple-system, system-ui, sans-serif;
+  color: var(--text-main);
+  min-height: 100vh;
+}
+
+/* Modern Navigation */
+.navbar {
+  background: rgba(10, 10, 10, 0.9) !important;
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-subtle);
+  z-index: 1050; /* Ensure navbar is above hero overlays */
+}
+
+
+.navbar-brand {
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: white !important;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+  color: #ccc;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover {
+  color: var(--primary);
+}
+
+.navbar-text {
+  color: #aaa !important;
+}
+
+/* Base Headings & Typography */
+h1, h2, h3, h4, h5, h6 {
+  color: white;
+  font-weight: 600;
+}
+
+/* Cards & Containers - Glassmorphism */
+.card {
+  background: var(--card-bg);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 1rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  color: var(--text-main);
+}
+
+.card-title {
+  color: white;
+}
+
+.card-subtitle {
+  color: var(--text-muted) !important;
+  border-color: rgba(255,255,255,0.05) !important;
+}
+
+/* Specific hover only on job listing cards */
+.interactive-card {
+  cursor: pointer;
+}
+
+.interactive-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7), 0 10px 10px -5px rgba(0, 0, 0, 0.5);
+  border-color: rgba(230, 0, 35, 0.3); /* subtle red glow border on hover */
+}
+
+
+.card-header {
+  background-color: transparent;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* Buttons */
+.btn {
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  letter-spacing: 0.3px;
+}
+
+.btn-primary {
+  background: var(--primary);
+  border: none;
+  color: white;
+  box-shadow: 0 4px 6px -1px rgba(230, 0, 35, 0.3);
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+  background: var(--primary-hover) !important;
+  color: white !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px -3px rgba(230, 0, 35, 0.5) !important;
+}
+
+/* Outline Buttons */
+.btn-outline-primary {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.btn-outline-primary:hover {
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 4px 10px rgba(230, 0, 35, 0.3);
+}
+
+/* Forms */
+.form-label {
+  color: var(--text-main);
+}
+
+.form-control, .form-select {
+  border-radius: 0.5rem;
+  background-color: #222;
+  border: 1px solid #444;
+  color: white;
+  padding: 0.75rem 1rem;
+  transition: all 0.2s ease;
+}
+
+.form-control:focus, .form-select:focus {
+  background-color: #2a2a2a;
+  color: white;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(230, 0, 35, 0.2);
+}
+
+.form-control::placeholder {
+  color: #777;
+}
+
+/* Bootstrap Overrides for dark mode */
+.modal-content {
+  background-color: #1f1f1f;
+  color: white;
+  border: 1px solid var(--border-subtle);
+}
+
+.modal-header, .modal-footer {
+  border-color: var(--border-subtle) !important;
+  background-color: transparent !important;
+}
+
+.close, .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+.text-muted {
+  color: var(--text-muted) !important;
+}
+
+/* Tables */
+.table {
+  color: var(--text-main);
+  background-color: transparent;
+}
+
+.table>:not(caption)>*>* {
+  background-color: transparent !important;
+  color: var(--text-main);
+  border-bottom-color: var(--border-subtle);
+}
+
+.table tbody tr:hover td {
+  background-color: rgba(255,255,255,0.02) !important;
+}
+
+.table thead th {
+  border-bottom-color: var(--border-subtle);
+}
+
+
+/* Alerts */
+.alert-info {
+  background-color: rgba(0, 0, 0, 0.3);
+  color: #aaa;
+  border: 1px solid #333;
+}
+
+.alert-success {
+  background-color: rgba(16, 185, 129, 0.15); /* Emerald Green */
+  color: #6ee7b7;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.alert-secondary {
+  background-color: #222;
+  color: #999;
+  border: 1px solid #333;
+}
+
+/* Badges */
+.bg-success {
+  background-color: #059669 !important;
+}
+.bg-primary {
+  background-color: var(--primary) !important;
+}
+
+/* Map Popups specific */
+.leaflet-popup-content-wrapper {
+  background: var(--card-bg) !important;
+  color: white !important;
+  border: 1px solid var(--border-subtle);
+}
+.leaflet-popup-tip {
+  background: var(--card-bg) !important;
+}
+
+/* Footer */
+.footer {
+  background-color: #111 !important;
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* Global Overrides for Blue Text */
+a {
+  color: white;
+}
+a:hover {
+  color: var(--text-muted);
+}
+.text-primary {
+  color: white !important;
+}
+
+/* RESPONSIVE UTILITIES */
+@media (max-width: 768px) {
+  .container {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+
+  .table-responsive {
+    border: 0;
+    margin-bottom: 0;
+    overflow-y: hidden;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .card-body {
+    padding: 1.25rem !important;
+  }
+
+  h1 { font-size: 1.75rem; }
+  h2 { font-size: 1.5rem; }
+  h4 { font-size: 1.1rem; }
+}
+
+
