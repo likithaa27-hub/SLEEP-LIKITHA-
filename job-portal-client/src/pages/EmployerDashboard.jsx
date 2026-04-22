@@ -1,14 +1,14 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Container, Row, Col, Card, Form, Button, Table, Badge, Tabs, Tab, Modal, ListGroup } from 'react-bootstrap';
 import { AppContext } from '../context/AppContext';
 import { Navigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 const EmployerDashboard = () => {
-  const { session, jobs, applications, users, updateProfile, createJob, updateApplicationStatus } = useContext(AppContext);
+  const { session, jobs, applications, users, updateProfile, createJob, updateApplicationStatus, refreshUsers, refreshApplications } = useContext(AppContext);
   const [key, setKey] = useState('post');
   const [isPosting, setIsPosting] = useState(false);
-  
+
   // Applicant Modal State
   const [showApplicantModal, setShowApplicantModal] = useState(false);
   const [selectedApplicant, setSelectedApplicant] = useState(null);
@@ -100,30 +100,37 @@ const EmployerDashboard = () => {
     return jobs.find(j => j.id === jobId) || {};
   };
 
+  useEffect(() => {
+    if (key === 'applications') {
+      refreshUsers();
+      refreshApplications();
+    }
+  }, [key, refreshUsers, refreshApplications]);
+
   return (
     <Container>
       <h2 className="mb-4">Employer Dashboard</h2>
-      
+
       <Tabs id="employer-tabs" activeKey={key} onSelect={(k) => setKey(k)} className="mb-4">
         <Tab eventKey="post" title="Post a New Job">
           <Card className="shadow-sm border-0">
             <Card.Body>
               <Form onSubmit={handleJobSubmit}>
                 <Row>
-                  <Col md={12}><Form.Group className="mb-3"><Form.Label>Job Name</Form.Label><Form.Control type="text" required value={jobData.title} onChange={(e) => setJobData({...jobData, title: e.target.value})} /></Form.Group></Col>
-                  <Col md={12}><Form.Group className="mb-3"><Form.Label>Job Description</Form.Label><Form.Control as="textarea" rows={3} required value={jobData.description} onChange={(e) => setJobData({...jobData, description: e.target.value})} /></Form.Group></Col>
-                  <Col md={6}><Form.Group className="mb-3"><Form.Label> Salary</Form.Label><Form.Control type="text" value={jobData.salary} onChange={(e) => setJobData({...jobData, salary: e.target.value})} /></Form.Group></Col>
-                  <Col md={6}><Form.Group className="mb-3"><Form.Label> Working Hours</Form.Label><Form.Control type="text" value={jobData.workingHours} onChange={(e) => setJobData({...jobData, workingHours: e.target.value})} /></Form.Group></Col>
-                  <Col md={4}><Form.Group className="mb-3"><Form.Label>Locality</Form.Label><Form.Control type="text" required value={jobData.locality} onChange={(e) => setJobData({...jobData, locality: e.target.value})} /></Form.Group></Col>
-                  <Col md={4}><Form.Group className="mb-3"><Form.Label>City</Form.Label><Form.Control type="text" required value={jobData.city} onChange={(e) => setJobData({...jobData, city: e.target.value})} /></Form.Group></Col>
-                  <Col md={4}><Form.Group className="mb-3"><Form.Label>State</Form.Label><Form.Control type="text" required value={jobData.state} onChange={(e) => setJobData({...jobData, state: e.target.value})} /></Form.Group></Col>
+                  <Col md={12}><Form.Group className="mb-3"><Form.Label>Job Name</Form.Label><Form.Control type="text" required value={jobData.title} onChange={(e) => setJobData({ ...jobData, title: e.target.value })} /></Form.Group></Col>
+                  <Col md={12}><Form.Group className="mb-3"><Form.Label>Job Description</Form.Label><Form.Control as="textarea" rows={3} required value={jobData.description} onChange={(e) => setJobData({ ...jobData, description: e.target.value })} /></Form.Group></Col>
+                  <Col md={6}><Form.Group className="mb-3"><Form.Label> Salary</Form.Label><Form.Control type="text" value={jobData.salary} onChange={(e) => setJobData({ ...jobData, salary: e.target.value })} /></Form.Group></Col>
+                  <Col md={6}><Form.Group className="mb-3"><Form.Label> Working Hours</Form.Label><Form.Control type="text" value={jobData.workingHours} onChange={(e) => setJobData({ ...jobData, workingHours: e.target.value })} /></Form.Group></Col>
+                  <Col md={4}><Form.Group className="mb-3"><Form.Label>Locality</Form.Label><Form.Control type="text" required value={jobData.locality} onChange={(e) => setJobData({ ...jobData, locality: e.target.value })} /></Form.Group></Col>
+                  <Col md={4}><Form.Group className="mb-3"><Form.Label>City</Form.Label><Form.Control type="text" required value={jobData.city} onChange={(e) => setJobData({ ...jobData, city: e.target.value })} /></Form.Group></Col>
+                  <Col md={4}><Form.Group className="mb-3"><Form.Label>State</Form.Label><Form.Control type="text" required value={jobData.state} onChange={(e) => setJobData({ ...jobData, state: e.target.value })} /></Form.Group></Col>
                 </Row>
                 <Button variant="primary" type="submit" disabled={isPosting}>{isPosting ? 'Posting...' : 'Post Job'}</Button>
               </Form>
             </Card.Body>
           </Card>
         </Tab>
-        
+
         <Tab eventKey="applications" title="View Applications">
           <Card className="shadow-sm border-0">
             <Card.Body className="p-0">
@@ -186,11 +193,11 @@ const EmployerDashboard = () => {
             <Card.Body>
               <Form onSubmit={handleCompanyUpdate}>
                 <Row>
-                  <Col md={6}><Form.Group className="mb-3"><Form.Label>Company Name</Form.Label><Form.Control type="text" value={companyData.companyName} onChange={e => setCompanyData({...companyData, companyName: e.target.value})} required /></Form.Group></Col>
-                  <Col md={6}><Form.Group className="mb-3"><Form.Label>Year Established</Form.Label><Form.Control type="number" value={companyData.establishedYear} onChange={e => setCompanyData({...companyData, establishedYear: e.target.value})} /></Form.Group></Col>
-                  <Col md={12}><Form.Group className="mb-3"><Form.Label>Company Location</Form.Label><Form.Control type="text" value={companyData.companyLocation} onChange={e => setCompanyData({...companyData, companyLocation: e.target.value})} /></Form.Group></Col>
-                  <Col md={12}><Form.Group className="mb-3"><Form.Label>About Company</Form.Label><Form.Control as="textarea" rows={4} value={companyData.aboutCompany} onChange={e => setCompanyData({...companyData, aboutCompany: e.target.value})} /></Form.Group></Col>
-                  <Col md={12}><Form.Group className="mb-3"><Form.Label>Terms & Conditions</Form.Label><Form.Control as="textarea" rows={4} value={companyData.termsAndConditions} onChange={e => setCompanyData({...companyData, termsAndConditions: e.target.value})} /></Form.Group></Col>
+                  <Col md={6}><Form.Group className="mb-3"><Form.Label>Company Name</Form.Label><Form.Control type="text" value={companyData.companyName} onChange={e => setCompanyData({ ...companyData, companyName: e.target.value })} required /></Form.Group></Col>
+                  <Col md={6}><Form.Group className="mb-3"><Form.Label>Year Established</Form.Label><Form.Control type="number" value={companyData.establishedYear} onChange={e => setCompanyData({ ...companyData, establishedYear: e.target.value })} /></Form.Group></Col>
+                  <Col md={12}><Form.Group className="mb-3"><Form.Label>Company Location</Form.Label><Form.Control type="text" value={companyData.companyLocation} onChange={e => setCompanyData({ ...companyData, companyLocation: e.target.value })} /></Form.Group></Col>
+                  <Col md={12}><Form.Group className="mb-3"><Form.Label>About Company</Form.Label><Form.Control as="textarea" rows={4} value={companyData.aboutCompany} onChange={e => setCompanyData({ ...companyData, aboutCompany: e.target.value })} /></Form.Group></Col>
+                  <Col md={12}><Form.Group className="mb-3"><Form.Label>Terms & Conditions</Form.Label><Form.Control as="textarea" rows={4} value={companyData.termsAndConditions} onChange={e => setCompanyData({ ...companyData, termsAndConditions: e.target.value })} /></Form.Group></Col>
                 </Row>
                 <Button variant="primary" type="submit">Save Company Details</Button>
               </Form>
