@@ -38,90 +38,90 @@ const Register = () => {
   };
 
   const sendOtp = async () => {
-      const phone = formData.phone.replace(/[^0-9]/g, '');
-      if (!/^[6-9][0-9]{9}$/.test(phone)) {
-        toast.error('Enter a valid 10-digit Indian mobile number.');
-        return;
+    const phone = formData.phone.replace(/[^0-9]/g, '');
+    if (!/^[6-9][0-9]{9}$/.test(phone)) {
+      toast.error('Enter a valid 10-digit Indian mobile number.');
+      return;
+    }
+    try {
+      const resp = await fetch('http://localhost:5000/api/otp/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone })
+      });
+      const data = await resp.json();
+      if (data.success) {
+        setOtpStep(true);
+        if (data.mockOtp) {
+          toast.info(`Mock OTP for testing: ${data.mockOtp}`, { autoClose: 10000 });
+        }
+        toast.success(data.message || 'OTP Sent!');
+      } else {
+        toast.error(data.message || 'Failed to send OTP');
       }
-      try {
-          const resp = await fetch('http://localhost:5000/api/otp/send', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ phone })
-          });
-          const data = await resp.json();
-          if (data.success) {
-              setOtpStep(true);
-              if (data.mockOtp) {
-                  toast.info(`Mock OTP for testing: ${data.mockOtp}`, { autoClose: 10000 });
-              }
-              toast.success(data.message || 'OTP Sent!');
-          } else {
-              toast.error(data.message || 'Failed to send OTP');
-          }
-      } catch (err) {
-          toast.error('Server error sending OTP');
-      }
+    } catch (err) {
+      toast.error('Server error sending OTP');
+    }
   };
 
   const verifyOtp = async () => {
-      const phone = formData.phone.replace(/[^0-9]/g, '');
-      try {
-          const resp = await fetch('http://localhost:5000/api/otp/verify', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ phone, otp })
-          });
-          const data = await resp.json();
-          if (data.success) {
-              setPhoneVerified(true);
-              setOtpStep(false);
-              toast.success('Phone verified successfully!');
-          } else {
-              toast.error(data.message || 'Invalid OTP');
-          }
-      } catch (err) {
-          toast.error('Server error verifying OTP');
+    const phone = formData.phone.replace(/[^0-9]/g, '');
+    try {
+      const resp = await fetch('http://localhost:5000/api/otp/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, otp })
+      });
+      const data = await resp.json();
+      if (data.success) {
+        setPhoneVerified(true);
+        setOtpStep(false);
+        toast.success('Phone verified successfully!');
+      } else {
+        toast.error(data.message || 'Invalid OTP');
       }
+    } catch (err) {
+      toast.error('Server error verifying OTP');
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (formData.role === 'employer' && !phoneVerified) {
-        toast.error('Please verify your phone number via OTP to continue.');
-        return;
+      toast.error('Please verify your phone number via OTP to continue.');
+      return;
     }
-    
+
     if (formData.role === 'employer' && (!files.aadhar_doc || !files.photo_doc)) {
-        toast.error('Both Aadhar Document and Photo are required for KYC.');
-        return;
+      toast.error('Both Aadhar Document and Photo are required for KYC.');
+      return;
     }
 
     const phone = formData.phone.replace(/[^0-9]/g, '');
 
     let submitData;
-    
-    if (formData.role === 'employer') {
-        const company_location = JSON.stringify({
-             address: formData.address,
-             city: formData.city,
-             state: formData.state,
-        });
 
-        submitData = new FormData();
-        Object.keys(formData).forEach(key => submitData.append(key, formData[key]));
-        submitData.set('phone', phone);
-        submitData.append('company_location', company_location);
-        submitData.append('phone_verified', phoneVerified);
-        submitData.append('aadhar_doc', files.aadhar_doc);
-        submitData.append('photo_doc', files.photo_doc);
+    if (formData.role === 'employer') {
+      const company_location = JSON.stringify({
+        address: formData.address,
+        city: formData.city,
+        state: formData.state,
+      });
+
+      submitData = new FormData();
+      Object.keys(formData).forEach(key => submitData.append(key, formData[key]));
+      submitData.set('phone', phone);
+      submitData.append('company_location', company_location);
+      submitData.append('phone_verified', phoneVerified);
+      submitData.append('aadhar_doc', files.aadhar_doc);
+      submitData.append('photo_doc', files.photo_doc);
     } else {
-        submitData = { ...formData, phone };
+      submitData = { ...formData, phone };
     }
 
     const result = await register(submitData);
-    
+
     if (result.success) {
       toast.success(result.message);
       navigate('/login');
@@ -176,33 +176,33 @@ const Register = () => {
                           maxLength={10}
                           readOnly={phoneVerified}
                         />
-                         {formData.role !== 'admin' && !phoneVerified && !otpStep && (
-                             <Button variant="outline-primary" onClick={sendOtp}>
-                                 Verify
-                             </Button>
-                         )}
+                        {formData.role !== 'admin' && !phoneVerified && !otpStep && (
+                          <Button variant="outline-primary" onClick={sendOtp}>
+                            Verify
+                          </Button>
+                        )}
                       </InputGroup>
                     </Form.Group>
 
                     {otpStep && !phoneVerified && (
-                         <Form.Group className="mb-3">
-                           <Form.Label>Enter OTP</Form.Label>
-                           <InputGroup>
-                             <Form.Control 
-                                 type="text" 
-                                 placeholder="4-digit OTP" 
-                                 value={otp} 
-                                 onChange={(e) => setOtp(e.target.value)} 
-                              />
-                             <Button variant="success" onClick={verifyOtp}>Confirm</Button>
-                           </InputGroup>
-                         </Form.Group>
+                      <Form.Group className="mb-3">
+                        <Form.Label>Enter OTP</Form.Label>
+                        <InputGroup>
+                          <Form.Control
+                            type="text"
+                            placeholder="4-digit OTP"
+                            value={otp}
+                            onChange={(e) => setOtp(e.target.value)}
+                          />
+                          <Button variant="success" onClick={verifyOtp}>Confirm</Button>
+                        </InputGroup>
+                      </Form.Group>
                     )}
-                    
+
                     {phoneVerified && (
-                        <div className="mb-3 text-success">
-                            <i className="bi bi-check-circle-fill me-2"></i>Phone number verified successfully
-                        </div>
+                      <div className="mb-3 text-success">
+                        <i className="bi bi-check-circle-fill me-2"></i>Phone number verified successfully
+                      </div>
                     )}
 
                     <Form.Group className="mb-3">
@@ -235,52 +235,53 @@ const Register = () => {
                       <Form.Select name="role" value={formData.role} onChange={handleChange}>
                         <option value="user">🔍 Job Seeker</option>
                         <option value="employer">🏢 Employer</option>
+                        <option value="admin">⚙️ Admin</option>
                       </Form.Select>
                     </Form.Group>
                   </Col>
 
                   {isEmp && (
                     <Col md={6}>
-                       <h5 className="mb-3 text-warning border-bottom pb-2">Employer Details (KYC)</h5>
-                       <Form.Group className="mb-3">
-                         <Form.Label>Company Name</Form.Label>
-                         <Form.Control type="text" name="company_name" value={formData.company_name} onChange={handleChange} required />
-                       </Form.Group>
+                      <h5 className="mb-3 text-warning border-bottom pb-2">Employer Details (KYC)</h5>
+                      <Form.Group className="mb-3">
+                        <Form.Label>Company Name</Form.Label>
+                        <Form.Control type="text" name="company_name" value={formData.company_name} onChange={handleChange} required />
+                      </Form.Group>
 
-                       <Form.Group className="mb-3">
-                         <Form.Label>Company Address (HQ)</Form.Label>
-                         <Form.Control type="text" name="address" value={formData.address} onChange={handleChange} required />
-                       </Form.Group>
-                         
-                       <Row>
-                         <Col>
-                           <Form.Group className="mb-3">
-                             <Form.Label>City</Form.Label>
-                             <Form.Control type="text" name="city" value={formData.city} onChange={handleChange} required />
-                           </Form.Group>
-                         </Col>
-                         <Col>
-                           <Form.Group className="mb-3">
-                             <Form.Label>State</Form.Label>
-                             <Form.Control type="text" name="state" value={formData.state} onChange={handleChange} required />
-                           </Form.Group>
-                         </Col>
-                       </Row>
+                      <Form.Group className="mb-3">
+                        <Form.Label>Company Address (HQ)</Form.Label>
+                        <Form.Control type="text" name="address" value={formData.address} onChange={handleChange} required />
+                      </Form.Group>
 
-                       <Form.Group className="mb-3">
-                         <Form.Label>Aadhar Number (12 Digits)</Form.Label>
-                         <Form.Control type="text" name="aadhar_number" value={formData.aadhar_number} onChange={handleChange} minLength={12} maxLength={12} required />
-                       </Form.Group>
+                      <Row>
+                        <Col>
+                          <Form.Group className="mb-3">
+                            <Form.Label>City</Form.Label>
+                            <Form.Control type="text" name="city" value={formData.city} onChange={handleChange} required />
+                          </Form.Group>
+                        </Col>
+                        <Col>
+                          <Form.Group className="mb-3">
+                            <Form.Label>State</Form.Label>
+                            <Form.Control type="text" name="state" value={formData.state} onChange={handleChange} required />
+                          </Form.Group>
+                        </Col>
+                      </Row>
 
-                       <Form.Group className="mb-3">
-                         <Form.Label>Upload Aadhar Document</Form.Label>
-                         <Form.Control type="file" name="aadhar_doc" accept="image/*,.pdf" onChange={handleFileChange} required />
-                       </Form.Group>
+                      <Form.Group className="mb-3">
+                        <Form.Label>Aadhar Number (12 Digits)</Form.Label>
+                        <Form.Control type="text" name="aadhar_number" value={formData.aadhar_number} onChange={handleChange} minLength={12} maxLength={12} required />
+                      </Form.Group>
 
-                       <Form.Group className="mb-3">
-                         <Form.Label>Upload Clear Photo</Form.Label>
-                         <Form.Control type="file" name="photo_doc" accept="image/*" onChange={handleFileChange} required />
-                       </Form.Group>
+                      <Form.Group className="mb-3">
+                        <Form.Label>Upload Aadhar Document</Form.Label>
+                        <Form.Control type="file" name="aadhar_doc" accept="image/*,.pdf" onChange={handleFileChange} required />
+                      </Form.Group>
+
+                      <Form.Group className="mb-3">
+                        <Form.Label>Upload Clear Photo</Form.Label>
+                        <Form.Control type="file" name="photo_doc" accept="image/*" onChange={handleFileChange} required />
+                      </Form.Group>
                     </Col>
                   )}
                 </Row>
@@ -294,7 +295,7 @@ const Register = () => {
               <div className="text-center mt-4">
                 Already have an account? <Link to="/login" className="text-decoration-none fw-bold">Login here</Link>
               </div>
-           </Card.Body>
+            </Card.Body>
           </Card>
         </Col>
       </Row>

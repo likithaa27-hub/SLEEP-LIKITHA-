@@ -13,9 +13,14 @@ if (isset($_POST['send_otp'])) {
         exit();
     }
 
+    // Preserve all form fields across redirect
+    $_SESSION['reg_name']  = trim($_POST['name'] ?? '');
+    $_SESSION['reg_email'] = trim($_POST['email'] ?? '');
+    $_SESSION['reg_role']  = trim($_POST['role'] ?? '');
+
     $otp = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
     $_SESSION['otp_phone'] = $phone;
-    $_SESSION['otp_code'] = $otp;
+    $_SESSION['otp_code']  = $otp;
     $_SESSION['phone_verified'] = false;
     $_SESSION['register_success'] = "OTP sent successfully. Demo OTP: $otp";
     $_SESSION['active_form'] = 'register';
@@ -25,7 +30,12 @@ if (isset($_POST['send_otp'])) {
 
 if (isset($_POST['verify_otp'])) {
     $phone = trim($_POST['phone'] ?? '');
-    $otp = trim($_POST['otp'] ?? '');
+    $otp   = trim($_POST['otp'] ?? '');
+
+    // Preserve form fields across redirect
+    $_SESSION['reg_name']  = trim($_POST['name'] ?? '');
+    $_SESSION['reg_email'] = trim($_POST['email'] ?? '');
+    $_SESSION['reg_role']  = trim($_POST['role'] ?? '');
 
     if (
         isset($_SESSION['otp_phone'], $_SESSION['otp_code']) &&
@@ -35,7 +45,7 @@ if (isset($_POST['verify_otp'])) {
         $_SESSION['phone_verified'] = true;
         $_SESSION['verified_phone'] = $phone;
         unset($_SESSION['otp_code']);
-        $_SESSION['register_success'] = 'Phone number verified successfully. You can now register.';
+        $_SESSION['register_success'] = 'Phone number verified successfully. You can now complete registration.';
     } else {
         $_SESSION['register_error'] = 'Invalid OTP or phone number mismatch.';
     }
@@ -60,6 +70,18 @@ if (isset($_POST['register'])) {
         exit();
     }
 
+    // Admin secret key validation
+    if ($role === 'admin') {
+        define('ADMIN_SECRET_KEY', 'Admin@1234'); // Change this to a strong secret
+        $adminSecret = trim($_POST['admin_secret'] ?? '');
+        if ($adminSecret !== ADMIN_SECRET_KEY) {
+            $_SESSION['register_error'] = 'Invalid Admin Secret Key.';
+            $_SESSION['active_form'] = 'register';
+            header("Location: login1.php");
+            exit();
+        }
+    }
+
     if (!isset($_SESSION['phone_verified'], $_SESSION['verified_phone']) || $_SESSION['phone_verified'] !== true || $_SESSION['verified_phone'] !== $phone) {
         $_SESSION['register_error'] = 'Please verify your phone number before registering.';
         $_SESSION['active_form'] = 'register';
@@ -73,7 +95,8 @@ if (isset($_POST['register'])) {
         $_SESSION['active_form'] = 'register';
     } else {
         $conn->query("INSERT INTO users (name, email, password, role, phone, phone_verified) VALUES ('$name', '$email', '$password', '$role', '$phone', 1)");
-        unset($_SESSION['phone_verified'], $_SESSION['verified_phone'], $_SESSION['otp_phone']);
+        unset($_SESSION['phone_verified'], $_SESSION['verified_phone'], $_SESSION['otp_phone'],
+              $_SESSION['reg_name'], $_SESSION['reg_email'], $_SESSION['reg_role']);
         $_SESSION['register_success'] = 'Registration successful. Please login.';
     }    
 
