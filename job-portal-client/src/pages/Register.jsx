@@ -3,6 +3,7 @@ import { Form, Button, Card, Container, Row, Col, InputGroup } from 'react-boots
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
 import { toast } from 'react-toastify';
+import { apiUrl } from '../config/api';
 
 const Register = () => {
   const [searchParams] = useSearchParams();
@@ -44,7 +45,7 @@ const Register = () => {
       return;
     }
     try {
-      const resp = await fetch('http://localhost:5000/api/otp/send', {
+      const resp = await fetch(apiUrl('/otp/send'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone })
@@ -67,7 +68,7 @@ const Register = () => {
   const verifyOtp = async () => {
     const phone = formData.phone.replace(/[^0-9]/g, '');
     try {
-      const resp = await fetch('http://localhost:5000/api/otp/verify', {
+      const resp = await fetch(apiUrl('/otp/verify'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone, otp })

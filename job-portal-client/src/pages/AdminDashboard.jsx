@@ -3,6 +3,7 @@ import { Container, Table, Button, Badge, Card, Modal, Image, Row, Col, Nav } fr
 import { AppContext } from '../context/AppContext';
 import { Navigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { apiUrl } from '../config/api';
 
 const AdminDashboard = () => {
   const { session, users, updateUserStatus } = useContext(AppContext);
@@ -91,10 +92,10 @@ const AdminDashboard = () => {
                     </Badge>
                   </td>
                   <td>
-                    <Badge 
+                    <Badge
                       bg={
-                        user.status === 'accepted' ? 'success' : 
-                        user.status === 'rejected' ? 'danger' : 'warning'
+                        user.status === 'accepted' ? 'success' :
+                          user.status === 'rejected' ? 'danger' : 'warning'
                       }
                       text={user.status === 'pending' ? 'dark' : undefined}
                     >
@@ -103,9 +104,9 @@ const AdminDashboard = () => {
                   </td>
                   <td>
                     {user.role === 'employer' ? (
-                       <Button variant="outline-primary" size="sm" onClick={() => handleViewKyc(user)}>View KYC</Button>
+                      <Button variant="outline-primary" size="sm" onClick={() => handleViewKyc(user)}>View KYC</Button>
                     ) : (
-                       <span className="text-muted small">N/A</span>
+                      <span className="text-muted small">N/A</span>
                     )}
                   </td>
                   <td>
@@ -164,7 +165,7 @@ const AdminDashboard = () => {
             <Badge
               bg={
                 selectedKycUser?.status === 'accepted' ? 'success' :
-                selectedKycUser?.status === 'rejected' ? 'danger' : 'warning'
+                  selectedKycUser?.status === 'rejected' ? 'danger' : 'warning'
               }
               text={selectedKycUser?.status === 'pending' ? 'dark' : undefined}
             >
@@ -172,27 +173,27 @@ const AdminDashboard = () => {
             </Badge>
           </div>
           {selectedKycUser && selectedKycUser.kyc ? (
-             <div>
-                <Row className="mb-3">
-                    <Col><strong>Company:</strong> {selectedKycUser.company_name || 'N/A'}</Col>
-                    <Col><strong>Phone Verified:</strong> {selectedKycUser.kyc.phone_verified ? 'Yes ✅' : 'No ❌'}</Col>
-                </Row>
-                <Row className="mb-3">
-                    <Col><strong>Aadhar Number:</strong> {selectedKycUser.kyc.aadhar_number}</Col>
-                </Row>
-                <Row>
-                     <Col md={6}>
-                         <h6 className="mb-2">Aadhar Document</h6>
-                         <Image src={`http://localhost:5000/api/users/${selectedKycUser.id}/kyc/aadhar`} fluid className="border rounded" alt="Aadhar" />
-                     </Col>
-                     <Col md={6}>
-                         <h6 className="mb-2">Photo Document</h6>
-                         <Image src={`http://localhost:5000/api/users/${selectedKycUser.id}/kyc/photo`} fluid className="border rounded" alt="Photo" />
-                     </Col>
-                </Row>
-             </div>
+            <div>
+              <Row className="mb-3">
+                <Col><strong>Company:</strong> {selectedKycUser.company_name || 'N/A'}</Col>
+                <Col><strong>Phone Verified:</strong> {selectedKycUser.kyc.phone_verified ? 'Yes ✅' : 'No ❌'}</Col>
+              </Row>
+              <Row className="mb-3">
+                <Col><strong>Aadhar Number:</strong> {selectedKycUser.kyc.aadhar_number}</Col>
+              </Row>
+              <Row>
+                <Col md={6}>
+                  <h6 className="mb-2">Aadhar Document</h6>
+                  <Image src={apiUrl(`/users/${selectedKycUser.id}/kyc/aadhar`)} fluid className="border rounded" alt="Aadhar" />
+                </Col>
+                <Col md={6}>
+                  <h6 className="mb-2">Photo Document</h6>
+                  <Image src={apiUrl(`/users/${selectedKycUser.id}/kyc/photo`)} fluid className="border rounded" alt="Photo" />
+                </Col>
+              </Row>
+            </div>
           ) : (
-              <p>No KYC Information available for this user.</p>
+            <p>No KYC Information available for this user.</p>
           )}
         </Modal.Body>
         <Modal.Footer>

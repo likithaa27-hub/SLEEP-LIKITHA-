@@ -1,10 +1,9 @@
 import React, { createContext, useState, useEffect, useCallback } from 'react';
 import { toast } from 'react-toastify';
+import { apiUrl } from '../config/api';
 
 const AppContext = createContext();
 export { AppContext };
-
-const API_BASE = 'http://localhost:5000/api';
 
 export const AppProvider = ({ children }) => {
   const [users, setUsers] = useState([]);
@@ -23,8 +22,7 @@ export const AppProvider = ({ children }) => {
   // Fetch Users
   const fetchUsers = useCallback(async () => {
     try {
-      const resp = await fetch(`${API_BASE}/users`);
-      const data = await resp.json();
+      const resp = await fetch(apiUrl('/users')); const data = await resp.json();
       if (data.success) {
         setUsers(data.users);
       }
@@ -36,7 +34,7 @@ export const AppProvider = ({ children }) => {
   // Fetch Jobs
   const fetchJobs = useCallback(async () => {
     try {
-      const resp = await fetch(`${API_BASE}/jobs`);
+      const resp = await fetch(apiUrl('/jobs'));
       const data = await resp.json();
       if (data.success) {
         // Map snake_case to camelCase
@@ -60,8 +58,8 @@ export const AppProvider = ({ children }) => {
     if (!session) return;
     try {
       const url = session.role === 'user'
-        ? `${API_BASE}/applications?user_id=${session.id}`
-        : `${API_BASE}/applications`;
+        ? apiUrl(`/applications?user_id=${session.id}`)
+        : apiUrl('/applications');
       const resp = await fetch(url);
       const data = await resp.json();
       if (data.success) {
@@ -133,7 +131,7 @@ export const AppProvider = ({ children }) => {
   // Auth Helpers
   const login = async (email, password) => {
     try {
-      const resp = await fetch(`${API_BASE}/auth/login`, {
+      const resp = await fetch(apiUrl('/auth/login'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -152,7 +150,7 @@ export const AppProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await fetch(`${API_BASE}/auth/logout`);
+      await fetch(apiUrl('/auth/logout'));
     } catch (error) {
       console.error('Logout failed:', error);
     }
@@ -170,7 +168,7 @@ export const AppProvider = ({ children }) => {
         options.headers = { 'Content-Type': 'application/json' };
       }
 
-      const resp = await fetch(`${API_BASE}/auth/register`, options);
+      const resp = await fetch(apiUrl('/auth/register'), options);
       const data = await resp.json();
       return data;
     } catch (error) {
@@ -182,7 +180,7 @@ export const AppProvider = ({ children }) => {
   const applyForJob = async (jobId, coverMessage) => {
     if (!session) return { success: false, message: 'You must be logged in to apply.' };
     try {
-      const resp = await fetch(`${API_BASE}/applications/apply`, {
+      const resp = await fetch(apiUrl('/applications/apply'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ job_id: jobId, user_id: session.id, cover_message: coverMessage })
@@ -200,7 +198,7 @@ export const AppProvider = ({ children }) => {
   // Job Management
   const createJob = async (jobData) => {
     try {
-      const resp = await fetch(`${API_BASE}/jobs/create`, {
+      const resp = await fetch(apiUrl('/jobs/create'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(jobData)
@@ -217,7 +215,7 @@ export const AppProvider = ({ children }) => {
 
   const updateApplicationStatus = async (appId, status) => {
     try {
-      const resp = await fetch(`${API_BASE}/applications/update_status`, {
+      const resp = await fetch(apiUrl('/applications/update_status'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: appId, status })
@@ -234,7 +232,7 @@ export const AppProvider = ({ children }) => {
 
   const updateUserStatus = async (userId, status) => {
     try {
-      const resp = await fetch(`${API_BASE}/users/${userId}/status`, {
+      const resp = await fetch(apiUrl(`/users/${userId}/status`), {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status })
@@ -251,7 +249,7 @@ export const AppProvider = ({ children }) => {
 
   const updateProfile = async (userId, profileData) => {
     try {
-      const resp = await fetch(`${API_BASE}/users/${userId}/profile`, {
+      const resp = await fetch(apiUrl(`/users/${userId}/profile`), {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(profileData)

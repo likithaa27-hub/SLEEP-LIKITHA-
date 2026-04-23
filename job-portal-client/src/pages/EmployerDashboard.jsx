@@ -100,6 +100,7 @@ const EmployerDashboard = () => {
     return jobs.find(j => j.id === jobId) || {};
   };
 
+
   useEffect(() => {
     if (key === 'applications') {
       refreshUsers();
