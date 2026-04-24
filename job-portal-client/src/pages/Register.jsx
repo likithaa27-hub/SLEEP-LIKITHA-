@@ -53,15 +53,31 @@ const Register = () => {
       const data = await resp.json();
       if (data.success) {
         setOtpStep(true);
-        if (data.mockOtp) {
-          toast.info(`Mock OTP for testing: ${data.mockOtp}`, { autoClose: 10000 });
-        }
         toast.success(data.message || 'OTP Sent!');
       } else {
         toast.error(data.message || 'Failed to send OTP');
       }
     } catch (err) {
       toast.error('Server error sending OTP');
+    }
+  };
+
+  const resendOtp = async () => {
+    const phone = formData.phone.replace(/[^0-9]/g, '');
+    try {
+      const resp = await fetch(apiUrl('/otp/resend'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone })
+      });
+      const data = await resp.json();
+      if (data.success) {
+        toast.success('New OTP sent successfully!');
+      } else {
+        toast.error(data.message || 'Failed to resend OTP');
+      }
+    } catch (err) {
+      toast.error('Server error resending OTP');
     }
   };
 
@@ -89,7 +105,7 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (formData.role === 'employer' && !phoneVerified) {
+    if (formData.role !== 'admin' && !phoneVerified) {
       toast.error('Please verify your phone number via OTP to continue.');
       return;
     }
@@ -191,10 +207,11 @@ const Register = () => {
                         <InputGroup>
                           <Form.Control
                             type="text"
-                            placeholder="4-digit OTP"
+                            placeholder="6-digit OTP"
                             value={otp}
                             onChange={(e) => setOtp(e.target.value)}
                           />
+                          <Button variant="outline-secondary" onClick={resendOtp}>Resend</Button>
                           <Button variant="success" onClick={verifyOtp}>Confirm</Button>
                         </InputGroup>
                       </Form.Group>

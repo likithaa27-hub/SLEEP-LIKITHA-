@@ -18,11 +18,10 @@ if (isset($_POST['send_otp'])) {
     $_SESSION['reg_email'] = trim($_POST['email'] ?? '');
     $_SESSION['reg_role']  = trim($_POST['role'] ?? '');
 
-    $otp = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+    // Fast2SMS integration was migrated to Node.js backend
     $_SESSION['otp_phone'] = $phone;
-    $_SESSION['otp_code']  = $otp;
     $_SESSION['phone_verified'] = false;
-    $_SESSION['register_success'] = "OTP sent successfully. Demo OTP: $otp";
+    $_SESSION['register_error'] = "OTP sending is not supported in this legacy file. Please use the React app.";
     $_SESSION['active_form'] = 'register';
     header("Location: login1.php");
     exit();

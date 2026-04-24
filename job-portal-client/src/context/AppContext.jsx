@@ -148,6 +148,25 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  const loginWithOtp = async (phone, otp) => {
+    try {
+      const resp = await fetch(apiUrl('/auth/login-otp'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, otp })
+      });
+      const data = await resp.json();
+      if (data.success) {
+        setSession(data.user);
+        return { success: true, user: data.user };
+      } else {
+        return { success: false, message: data.message };
+      }
+    } catch (error) {
+      return { success: false, message: 'Server connection failed.' };
+    }
+  };
+
   const logout = async () => {
     try {
       await fetch(apiUrl('/auth/logout'));
@@ -275,7 +294,7 @@ export const AppProvider = ({ children }) => {
       jobs, setJobs,
       applications, setApplications,
       session, setSession,
-      login, logout, register,
+      login, loginWithOtp, logout, register,
       updateProfile,
       updateUserStatus,
       applyForJob,

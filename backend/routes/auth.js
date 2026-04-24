@@ -5,6 +5,7 @@ const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 const User = require('../models/User');
+const Otp = require('../models/Otp');
 const { encryptBuffer } = require('../utils/cryptoUtils');
 
 // Configure multer for memory storage initially (so we can encrypt buffer)
@@ -95,6 +96,53 @@ router.post('/login', async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ success: false, message: 'Invalid credentials' });
+    }
+
+    if (user.status !== 'accepted' && user.role !== 'admin') {
+       return res.status(401).json({ success: false, message: 'Account is not accepted yet' });
+    }
+
+    const userPayload = {
+      id: user._id.toString(),
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      status: user.status
+    };
+
+    res.json({ success: true, user: userPayload });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// POST /api/auth/login-otp
+router.post('/login-otp', async (req, res) => {
+  try {
+    const { phone, otp } = req.body;
+    
+    if (!phone || !otp) {
+      return res.status(400).json({ success: false, message: 'Phone and OTP are required' });
+    }
+
+    // Verify OTP securely
+    const record = await Otp.findOne({ phone });
+    if (!record) {
+      return res.status(400).json({ success: false, message: 'No OTP requested for this number' });
+    }
+
+    if (record.otp !== otp) {
+      return res.status(400).json({ success: false, message: 'Invalid OTP' });
+    }
+
+    // OTP is valid, consume it
+    await Otp.deleteOne({ phone });
+
+    // Check if user exists with this phone number
+    const user = await User.findOne({ phone });
+    if (!user) {
+      return res.status(400).json({ success: false, message: 'No account found with this phone number' });
     }
 
     if (user.status !== 'accepted' && user.role !== 'admin') {

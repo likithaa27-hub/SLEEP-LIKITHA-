@@ -1,13 +1,20 @@
 import React, { useState, useContext } from 'react';
-import { Form, Button, Card, Container, Row, Col, Alert } from 'react-bootstrap';
+import { Form, Button, Card, Container, Row, Col, Alert, Nav, InputGroup } from 'react-bootstrap';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
 import { toast } from 'react-toastify';
+import { apiUrl } from '../config/api';
 
 const Login = () => {
+  const [loginMethod, setLoginMethod] = useState('email'); // 'email' or 'phone'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login } = useContext(AppContext);
+  
+  const [phone, setPhone] = useState('');
+  const [otp, setOtp] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+
+  const { login, loginWithOtp } = useContext(AppContext);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -16,10 +23,23 @@ const Login = () => {
   const isJobseeker = intent === 'jobseeker';
   const isEmployer  = intent === 'employer';
 
-  const handleSubmit = async (e) => {
+  const handleEmailSubmit = async (e) => {
     e.preventDefault();
     const result = await login(email, password);
-    
+    handleLoginResult(result);
+  };
+
+  const handlePhoneSubmit = async (e) => {
+    e.preventDefault();
+    if (!otpSent) {
+      toast.error('Please request an OTP first.');
+      return;
+    }
+    const result = await loginWithOtp(phone.replace(/[^0-9]/g, ''), otp);
+    handleLoginResult(result);
+  };
+
+  const handleLoginResult = (result) => {
     if (result.success) {
       toast.success('Login successful!');
       if (result.user.role === 'admin')    navigate('/admin');
@@ -27,6 +47,49 @@ const Login = () => {
       else navigate('/user');
     } else {
       toast.error(result.message);
+    }
+  };
+
+  const sendOtp = async () => {
+    const cleanPhone = phone.replace(/[^0-9]/g, '');
+    if (!/^[6-9][0-9]{9}$/.test(cleanPhone)) {
+      toast.error('Enter a valid 10-digit Indian mobile number.');
+      return;
+    }
+    try {
+      const resp = await fetch(apiUrl('/otp/send'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: cleanPhone })
+      });
+      const data = await resp.json();
+      if (data.success) {
+        setOtpSent(true);
+        toast.success(data.message || 'OTP Sent!');
+      } else {
+        toast.error(data.message || 'Failed to send OTP');
+      }
+    } catch (err) {
+      toast.error('Server error sending OTP');
+    }
+  };
+
+  const resendOtp = async () => {
+    const cleanPhone = phone.replace(/[^0-9]/g, '');
+    try {
+      const resp = await fetch(apiUrl('/otp/resend'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: cleanPhone })
+      });
+      const data = await resp.json();
+      if (data.success) {
+        toast.success('New OTP sent successfully!');
+      } else {
+        toast.error(data.message || 'Failed to resend OTP');
+      }
+    } catch (err) {
+      toast.error('Server error resending OTP');
     }
   };
 
@@ -84,35 +147,105 @@ const Login = () => {
               <h2 className="text-center mb-4 text-primary fw-bold">
                 {isJobseeker ? '👋 Welcome, Job Seeker' : isEmployer ? '👋 Welcome, Employer' : 'Welcome Back'}
               </h2>
-              <Form onSubmit={handleSubmit}>
-                <Form.Group className="mb-3" controlId="formBasicEmail">
-                  <Form.Label>Email address</Form.Label>
-                  <Form.Control 
-                    type="email" 
-                    placeholder="Enter email" 
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </Form.Group>
+              <Nav variant="pills" className="justify-content-center mb-4">
+                <Nav.Item>
+                  <Nav.Link 
+                    active={loginMethod === 'email'} 
+                    onClick={() => setLoginMethod('email')}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    Email
+                  </Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link 
+                    active={loginMethod === 'phone'} 
+                    onClick={() => setLoginMethod('phone')}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    Phone (OTP)
+                  </Nav.Link>
+                </Nav.Item>
+              </Nav>
 
-                <Form.Group className="mb-4" controlId="formBasicPassword">
-                  <Form.Label>Password</Form.Label>
-                  <Form.Control 
-                    type="password" 
-                    placeholder="Password" 
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                </Form.Group>
-                
-                <div className="d-grid gap-2">
-                  <Button variant="primary" type="submit" size="lg">
-                    Log In
-                  </Button>
-                </div>
-              </Form>
+              {loginMethod === 'email' ? (
+                <Form onSubmit={handleEmailSubmit}>
+                  <Form.Group className="mb-3" controlId="formBasicEmail">
+                    <Form.Label>Email address</Form.Label>
+                    <Form.Control 
+                      type="email" 
+                      placeholder="Enter email" 
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                  </Form.Group>
+
+                  <Form.Group className="mb-4" controlId="formBasicPassword">
+                    <Form.Label>Password</Form.Label>
+                    <Form.Control 
+                      type="password" 
+                      placeholder="Password" 
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                    />
+                  </Form.Group>
+                  
+                  <div className="d-grid gap-2">
+                    <Button variant="primary" type="submit" size="lg">
+                      Log In
+                    </Button>
+                  </div>
+                </Form>
+              ) : (
+                <Form onSubmit={handlePhoneSubmit}>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Mobile Number</Form.Label>
+                    <InputGroup>
+                      <InputGroup.Text style={{ background: '#1e293b', border: '1px solid #334155', color: '#94a3b8', fontWeight: 600 }}>
+                        +91
+                      </InputGroup.Text>
+                      <Form.Control
+                        type="tel"
+                        placeholder="10-digit mobile number"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        maxLength={10}
+                        required
+                        disabled={otpSent}
+                      />
+                      {!otpSent && (
+                        <Button variant="outline-primary" onClick={sendOtp}>
+                          Send OTP
+                        </Button>
+                      )}
+                    </InputGroup>
+                  </Form.Group>
+
+                  {otpSent && (
+                    <Form.Group className="mb-4">
+                      <Form.Label>Enter OTP</Form.Label>
+                      <InputGroup>
+                        <Form.Control
+                          type="text"
+                          placeholder="6-digit OTP"
+                          value={otp}
+                          onChange={(e) => setOtp(e.target.value)}
+                          required
+                        />
+                        <Button variant="outline-secondary" onClick={resendOtp}>Resend</Button>
+                      </InputGroup>
+                    </Form.Group>
+                  )}
+                  
+                  <div className="d-grid gap-2">
+                    <Button variant="primary" type="submit" size="lg" disabled={!otpSent}>
+                      Log In
+                    </Button>
+                  </div>
+                </Form>
+              )}
               <div className="text-center mt-4">
                 Don't have an account?{' '}
                 <Link
