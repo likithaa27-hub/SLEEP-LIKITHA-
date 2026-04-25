@@ -1,13 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import '../index_style.css'; 
+import '../index_style.css';
 
 const Home = () => {
   return (
     <div className="index-homepage">
       {/* HERO SECTION acts as full page background */}
       <div className="hero">
-        
+
         {/* Absolute NAVBAR relative to hero */}
         <div className="navbar">
           <h2>JobConnect</h2>
@@ -20,7 +20,9 @@ const Home = () => {
             <Link to="/login?intent=employer" className="text-decoration-none" style={{ color: 'inherit' }}>
               Hire Employees
             </Link>
-
+            <a href="#about" style={{ color: 'inherit', textDecoration: 'none' }}>
+              About Us
+            </a>
 
             <Link to="/login" className="login-btn">Get Started</Link>
 
@@ -29,8 +31,8 @@ const Home = () => {
 
         <div className="hero-content">
           <h1>
-            Work meets  
-            <span>Opportunity</span>  
+            Work meets
+            <span>Opportunity</span>
             Effortlessly
           </h1>
 
@@ -58,8 +60,8 @@ const Home = () => {
           <div className="about-content">
             <h2>About Us</h2>
             <p>
-              At JobConnect, we're redefining how talent meets opportunity. 
-              Our platform is crafted to provide a seamless, delightful experience 
+              At JobConnect, we're redefining how talent meets opportunity.
+              Our platform is crafted to provide a seamless, delightful experience
               for both job seekers and employers, removing the complexity of modern hiring.
             </p>
           </div>
@@ -72,8 +74,8 @@ const Home = () => {
           <div className="about-content">
             <h2>Our Mission</h2>
             <p>
-              Our mission is to help millions of organizations grow better. 
-              We believe growth means aligning the success of your business 
+              Our mission is to help millions of organizations grow better.
+              We believe growth means aligning the success of your business
               with the success of your people. When people thrive, businesses grow.
             </p>
           </div>
